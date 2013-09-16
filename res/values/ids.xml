@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <item type="id" name="view_highlight"></item>
+    <item type="id" name="view_conver"></item>
+    <item type="id" name="view_annotion"></item>
+    <item type="id" name="view_draw"></item>
+</resources>
