@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <LinearLayout
+            android:layout_height="44dip"
+            android:layout_width="match_parent"
+            android:background="#cccccc"
+            >
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Device"
+                android:paddingLeft="8dip"
+                android:paddingRight="4dip"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                ></TextView>
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:hint="Dn900 V1.00"
+                ></EditText>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IP"
+                android:paddingLeft="8dip"
+                android:paddingRight="4dip"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                ></TextView>
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:hint="192.168.0.0"
+                ></EditText>
+    </LinearLayout>
+    <LinearLayout
+            android:layout_height="44dip"
+            android:layout_width="match_parent"
+            >
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="System Time"
+                android:paddingLeft="8dip"
+                android:paddingRight="8dip"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                ></TextView>
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                ></EditText>
+    </LinearLayout>
+    <LinearLayout
+            android:layout_height="44dip"
+            android:layout_width="match_parent"
+            android:background="#cccccc"
+            >
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MultiShot interval"
+                android:paddingLeft="8dip"
+                android:paddingRight="4dip"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                ></TextView>
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:hint="1s"
+                ></EditText>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Record Limit"
+                android:paddingLeft="8dip"
+                android:paddingRight="4dip"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                ></TextView>
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:hint="1min"
+                ></EditText>
+    </LinearLayout>
+    <LinearLayout
+            android:layout_height="44dip"
+            android:layout_width="match_parent"
+            >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:text="Format SD card"
+                ></Button>
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:text="Restart Device"
+                ></Button>
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:text="Restore factory setting"
+                ></Button>
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:text="Firmware upgrade"
+                ></Button>
+    </LinearLayout>
+
+</LinearLayout>

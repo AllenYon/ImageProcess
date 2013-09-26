@@ -23,6 +23,8 @@ public class MyView extends View {
     private MaskFilter mEmboss;
     private MaskFilter mBlur;
 
+    private float mStartX, mStartY;
+
     public MyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
@@ -81,6 +83,8 @@ public class MyView extends View {
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
+        mStartX = x;
+        mStartY = y;
     }
 
     private void touch_move(float x, float y) {
@@ -95,6 +99,10 @@ public class MyView extends View {
 
     private void touch_up() {
         mPath.lineTo(mX, mY);
+
+        if (mMode == Mode.EraseArea) {
+            mPath.lineTo(mStartX, mStartY);
+        }
         // commit the path to our offscreen
         mCanvas.drawPath(mPath, mPaint);
         // kill this so we don't double draw
@@ -131,7 +139,8 @@ public class MyView extends View {
 
     public enum Mode {
         Draw,
-        Erase
+        EraseBrush,
+        EraseArea
     }
 
     private Mode mMode;
@@ -144,9 +153,15 @@ public class MyView extends View {
     public void updateMode() {
         switch (mMode) {
             case Draw:
+                mPaint.setStyle(Paint.Style.STROKE);
                 mPaint.setXfermode(null);
                 break;
-            case Erase:
+            case EraseBrush:
+                mPaint.setStyle(Paint.Style.STROKE);
+                mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                break;
+            case EraseArea:
+                mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
                 mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
                 break;
         }

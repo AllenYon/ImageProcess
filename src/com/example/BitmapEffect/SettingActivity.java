@@ -1,30 +1,11 @@
-/*
- * Copyright (c) 2010-2011, The MiCode Open Source Community (www.micode.net)
- *
- * This file is part of FileExplorer.
- *
- * FileExplorer is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * FileExplorer is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-package net.micode.fileexplorer;
+package com.example.BitmapEffect;
 
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -32,21 +13,35 @@ import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ActionMode;
-import com.example.BitmapEffect.R;
+import net.micode.fileexplorer.FileCategoryActivity;
+import net.micode.fileexplorer.FileViewActivity;
+import net.micode.fileexplorer.Util;
 
 import java.util.ArrayList;
 
-public class FileExplorerTabActivity extends Activity {
+/**
+ * Created with IntelliJ IDEA.
+ * User: Link
+ * Date: 13-9-25
+ * Time: PM11:13
+ * To change this template use File | Settings | File Templates.
+ */
+public class SettingActivity extends Activity {
     private static final String INSTANCESTATE_TAB = "tab";
     private static final int DEFAULT_OFFSCREEN_PAGES = 2;
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
     ActionMode mActionMode;
 
+    public static void show(Context ctx) {
+        Intent intent = new Intent(ctx, SettingActivity.class);
+        ctx.startActivity(intent);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.fragment_pager);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(DEFAULT_OFFSCREEN_PAGES);
@@ -58,69 +53,18 @@ public class FileExplorerTabActivity extends Activity {
         mTabsAdapter = new TabsAdapter(this, mViewPager);
 //        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_category),
 //                FileCategoryActivity.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_sd),
-                FileViewActivity.class, null);
-//        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_remote),
-//                ServerControlActivity.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText("Resolutions"),
+                ResolutionFragment.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText("Network"),
+                NetworkFragment.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText("Language"),
+                LanguageFragment.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText("System"),
+                SystemFragment.class, null);
 //        bar.setSelectedNavigationItem(PreferenceManager.getDefaultSharedPreferences(this)
 //                .getInt(INSTANCESTATE_TAB, Util.CATEGORY_TAB_INDEX));
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putInt(INSTANCESTATE_TAB, getActionBar().getSelectedNavigationIndex());
-        editor.commit();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        if (getActionBar().getSelectedNavigationIndex() == Util.CATEGORY_TAB_INDEX) {
-            FileCategoryActivity categoryFragement =(FileCategoryActivity) mTabsAdapter.getItem(Util.CATEGORY_TAB_INDEX);
-            if (categoryFragement.isHomePage()) {
-                reInstantiateCategoryTab();
-            } else {
-                categoryFragement.setConfigurationChanged(true);
-            }
-        }
-        super.onConfigurationChanged(newConfig);
-    }
-
-    public void reInstantiateCategoryTab() {
-        mTabsAdapter.destroyItem(mViewPager, Util.CATEGORY_TAB_INDEX,
-                mTabsAdapter.getItem(Util.CATEGORY_TAB_INDEX));
-        mTabsAdapter.instantiateItem(mViewPager, Util.CATEGORY_TAB_INDEX);
-    }
-
-    @Override
-    public void onBackPressed() {
-        IBackPressedListener backPressedListener = (IBackPressedListener) mTabsAdapter
-                .getItem(mViewPager.getCurrentItem());
-        if (!backPressedListener.onBack()) {
-            super.onBackPressed();
-        }
-    }
-
-    public interface IBackPressedListener {
-        /**
-         * 处理back事件。
-         * @return True: 表示已经处理; False: 没有处理，让基类处理。
-         */
-        boolean onBack();
-    }
-
-    public void setActionMode(ActionMode actionMode) {
-        mActionMode = actionMode;
-    }
-
-    public ActionMode getActionMode() {
-        return mActionMode;
-    }
-
-    public Fragment getFragment(int tabIndex) {
-        return mTabsAdapter.getItem(tabIndex);
-    }
 
     /**
      * This is a helper class that implements the management of tabs and all
@@ -197,27 +141,27 @@ public class FileExplorerTabActivity extends Activity {
         }
 
         @Override
-        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             Object tag = tab.getTag();
-            for (int i=0; i<mTabs.size(); i++) {
+            for (int i = 0; i < mTabs.size(); i++) {
                 if (mTabs.get(i) == tag) {
                     mViewPager.setCurrentItem(i);
                 }
             }
-            if(!tab.getText().equals(mContext.getString(R.string.tab_sd))) {
-                ActionMode actionMode = ((FileExplorerTabActivity) mContext).getActionMode();
-                if (actionMode != null) {
-                    actionMode.finish();
-                }
-            }
+//            if(!tab.getText().equals(mContext.getString(R.string.tab_sd))) {
+//                ActionMode actionMode = ((FileExplorerTabActivity) mContext).getActionMode();
+//                if (actionMode != null) {
+//                    actionMode.finish();
+//                }
+//            }
         }
 
         @Override
-        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
 
         @Override
-        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
     }
 }
