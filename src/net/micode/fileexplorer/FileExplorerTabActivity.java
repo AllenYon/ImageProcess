@@ -32,6 +32,8 @@ import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ActionMode;
+import android.view.View;
+import android.widget.Button;
 import com.example.BitmapEffect.R;
 
 import java.util.ArrayList;
@@ -43,6 +45,9 @@ public class FileExplorerTabActivity extends Activity {
     TabsAdapter mTabsAdapter;
     ActionMode mActionMode;
 
+//    Custom
+//    Button mBtnBack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +55,14 @@ public class FileExplorerTabActivity extends Activity {
         setContentView(R.layout.fragment_pager);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(DEFAULT_OFFSCREEN_PAGES);
+
+        findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //ToDo
+                finish();
+            }
+        });
 
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

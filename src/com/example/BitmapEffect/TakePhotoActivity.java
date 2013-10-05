@@ -98,38 +98,18 @@ public class TakePhotoActivity extends Activity implements View.OnClickListener 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             //ToDo
-            File saveFile = savePicture(data);
-            Intent idata = new Intent();
+            File saveFile = Utils.savePicture(data);
+            Intent idata = new Intent(TakePhotoActivity.this, MainActivity.class);
+            idata.putExtra("type", MainActivity.Type.Temp);
             idata.putExtra("savefile", saveFile.getAbsolutePath());
+            startActivity(idata);
+
             setResult(RESULT_OK, idata);
             finish();
+
+
         }
     };
-
-    private File savePicture(byte[] data) {
-        Bitmap jpeg = BitmapFactory.decodeByteArray(data, 0, data.length);
-        File saveFile = new File(getDir(), System.currentTimeMillis() + ".jpeg");
-        try {
-            FileOutputStream fos = new FileOutputStream(saveFile);
-            jpeg.compress(Bitmap.CompressFormat.JPEG, 80, fos);
-            fos.flush();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return saveFile;
-    }
-
-    private File getDir() {
-        String dirPath = Environment.getExternalStorageDirectory() + "/" + "BitmapEffect";
-        File dir = new File(dirPath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        return dir;
-    }
 
 
 }

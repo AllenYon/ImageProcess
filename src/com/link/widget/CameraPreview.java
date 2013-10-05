@@ -1,13 +1,12 @@
 package com.link.widget;
 
 import android.content.Context;
+import android.gesture.GestureOverlayView;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.RelativeLayout;
+import com.nineoldandroids.view.ViewHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,6 +39,11 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         mHolder = mSurefaceView.getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        mGD = new GestureDetector(ctx, mGListener);
+
+
+
     }
 
 
@@ -62,6 +66,56 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
         requestLayout();
         camera.setParameters(parameters);
+    }
+
+    GestureDetector mGD;
+    GestureDetector.OnGestureListener mGListener = new GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return false;  //ToDo
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            //ToDo
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;  //ToDo
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//            setTranslationX(e2.getX());
+//            setTranslationY(e2.getY());
+            scrollBy((int)distanceX,(int)distanceY);
+//            if (e2 != null&&e1!=e2) {
+//                ViewHelper.setTranslationX(CameraPreview.this, e2.getX());
+//                ViewHelper.setTranslationY(CameraPreview.this, e2.getY());
+//            }
+
+            return true;  //ToDo
+
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            //ToDo
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;  //ToDo
+        }
+    };
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mGD.onTouchEvent(event);
+        return true;
+
+//        return super.onTouchEvent(event);
     }
 
     @Override

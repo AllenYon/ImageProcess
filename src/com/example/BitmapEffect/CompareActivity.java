@@ -3,12 +3,17 @@ package com.example.BitmapEffect;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 import com.link.widget.CameraPreview;
 import uk.co.senab.photoview.PhotoViewAttacher;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,11 +32,12 @@ public class CompareActivity extends Activity {
 
     PhotoViewAttacher mAttacher;
 
-    String mImgFilePath;
+    //    String mImgFilePath;
+    Uri mImgUri;
 
-    static public void show(Context ctx,String imgFilePath){
-        Intent intent=new Intent(ctx,CompareActivity.class);
-        intent.putExtra("img.file.path",imgFilePath);
+    static public void show(Context ctx, Uri imgFilePath) {
+        Intent intent = new Intent(ctx, CompareActivity.class);
+        intent.putExtra("img.file.path", imgFilePath);
         ctx.startActivity(intent);
 
     }
@@ -41,7 +47,8 @@ public class CompareActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_compare);
 
-        mImgFilePath=getIntent().getStringExtra("img.file.path");
+//        mImgFilePath=getIntent().getStringExtra("img.file.path");
+        mImgUri = (Uri) getIntent().getParcelableExtra("img.file.path");
 
         mImg = (ImageView) findViewById(R.id.img_main);
         mCameraPreview = (CameraPreview) findViewById(R.id.camera_preview);
@@ -59,7 +66,12 @@ public class CompareActivity extends Activity {
         }
 
 
-        mImg.setImageBitmap(BitmapFactory.decodeFile(mImgFilePath));
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImgUri);
+            mImg.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

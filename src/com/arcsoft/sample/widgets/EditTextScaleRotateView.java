@@ -59,24 +59,26 @@ public class EditTextScaleRotateView extends EditText {
         }
     }
 
-    ;
 
     public EditTextScaleRotateView(Context context) {
-        this(context, null);
+        this(context, null, 0, 400, 200);
     }
 
     public EditTextScaleRotateView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0, 400, 200);
     }
 
-    public EditTextScaleRotateView(Context context, AttributeSet attrs,
-                                   int defStyle) {
+
+    public EditTextScaleRotateView(Context context, int x, int y) {
+        this(context, null, 0, x, y);
+    }
+
+    public EditTextScaleRotateView(Context context, AttributeSet attrs, int defStyle, int x, int y) {
         super(context, attrs, defStyle);
-
-        init();
+        init(x, y);
     }
 
-    private void init() {
+    private void init(int x, int y) {
         mScaleRotateListener = new ScaleRotateListener();
         mGestureDetector = new GestureDetector(getContext(), mScaleRotateListener);
         mMotionEdge = DrawableHighlightView.GROW_NONE;
@@ -92,8 +94,8 @@ public class EditTextScaleRotateView extends EditText {
 
         TextState state = new TextState();
         state.mText = "";
-        state.mRectCenterX = 400;
-        state.mRectCenterY = 200;
+        state.mRectCenterX = x;
+        state.mRectCenterY = y;
         initBy(state);
     }
 

@@ -17,8 +17,7 @@
                 android:id="@+id/layout_effect_contain"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
-                >
-        </RelativeLayout>
+                ></RelativeLayout>
     </RelativeLayout>
     <com.link.widget.ScrollableBottomBar
             android:id="@+id/scrollable_left"
@@ -33,80 +32,81 @@
                 android:orientation="vertical"
                 >
             <Button
-                    android:id="@+id/btn_pick"
+                    android:id="@+id/btn_home"
                     android:layout_height="44dip"
                     android:layout_width="match_parent"
-                    android:text="選擇"
+                    android:background="@drawable/icon_home"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_paint"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/icon_brush_b"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_erase"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/icon_eraser_b"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_save"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="保存"
                     android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_record"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="REC"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_takephoto"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="连拍"
+                    android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_file_expolore"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/img_folder"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_highlight"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/icon_enhance_exposure_c"
                     ></Button>
 
             <Button
                     android:id="@+id/btn_rotate"
                     android:layout_height="44dip"
                     android:layout_width="match_parent"
-                    android:text="旋轉"
-                    android:textSize="12sp"
+                    android:background="@drawable/btn_rotate_leftrotate_c"
                     ></Button>
 
-            <Button
-                    android:id="@+id/btn_paint"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="畫筆"
-                    android:textSize="12sp"
-                    ></Button>
-            <Button
-                    android:id="@+id/btn_erase"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="擦寫"
-                    android:textSize="12sp"
-                    ></Button>
-            <Button
-                    android:id="@+id/btn_annotation"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="批註"
-                    android:textSize="12sp"
-                    ></Button>
-            <Button
-                    android:id="@+id/btn_take_photo"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="拍照"
-                    android:textSize="12sp"
-                    ></Button>
-
-            <Button
-                    android:id="@+id/btn_highlight"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="高亮"
-                    android:textSize="12sp"
-                    ></Button>
 
             <Button
                     android:id="@+id/btn_conver"
                     android:layout_height="44dip"
                     android:layout_width="match_parent"
-                    android:text="遮罩"
+                    android:background="@drawable/btn_mainmenu_masoic_c"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_switch"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="切换"
                     android:textSize="12sp"
                     ></Button>
 
-            <Button
-                    android:id="@+id/btn_compare"
-                    android:layout_height="44dip"
-                    android:layout_width="match_parent"
-                    android:text="对比"
-                    android:textSize="12sp"
-                    ></Button>
-            <ToggleButton
-                    android:id="@+id/btn_pip"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textOn="开"
-                    android:textOff="关"
-                    ></ToggleButton>
         </LinearLayout>
     </com.link.widget.ScrollableBottomBar>
     <com.link.widget.ScrollableBottomBar
@@ -123,24 +123,160 @@
                 android:orientation="vertical"
                 >
             <Button
-                    android:id="@+id/btn_save"
+                    android:id="@+id/btn_zoomin"
                     android:layout_height="44dip"
                     android:layout_width="match_parent"
-                    android:text="保存"
+                    android:text="放大"
+                    android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_zoomout"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="缩小"
+                    android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_brightplus"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="亮度+"
+                    android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_brightreduce"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="亮度-"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_yuanjiao"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="远焦"
+                    android:textSize="12sp"
+                    ></Button>
+
+            <Button
+                    android:id="@+id/btn_jingjiao"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="近焦"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_autofocus"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="自动对焦"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_compare"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="同屏对比"
+                    android:textSize="12sp"
+                    ></Button>
+
+
+            <ToggleButton
+                    android:id="@+id/btn_pip"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textOn="画中画开"
+                    android:textOff="画中画关"
+                    ></ToggleButton>
+            <Button
+                    android:id="@+id/btn_black_white"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="黑白"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_annotation"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="批註"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_shuang"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="霜冻"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_mirrorface"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="镜面"
+                    android:textSize="12sp"
+                    ></Button>
+            <Button
+                    android:id="@+id/btn_fupian"
+                    android:layout_height="44dip"
+                    android:layout_width="match_parent"
+                    android:text="负片"
                     android:textSize="12sp"
                     ></Button>
         </LinearLayout>
     </com.link.widget.ScrollableBottomBar>
-    <ToggleButton
-            android:id="@+id/tbtn_toolbar"
-            android:layout_height="44dip"
+    <LinearLayout
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:textOn="工具条显示"
-            android:textOff="工具条隐藏"
-            android:checked="true"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            ></ToggleButton>
+            android:id="@+id/layout_bottom_bar"
+            >
 
+        <Button
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:id="@+id/btn_pre"
+                android:background="@drawable/btn_web_back_a"
+                ></Button>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="44dip"
+                android:text="放大"
+                android:id="@+id/btn_zoomin_bottom"
+                ></Button>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="44dip"
+                android:id="@+id/btn_zoomout_bottom"
+                android:text="缩小"
+                ></Button>
+        <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="44dip"
+                android:id="@+id/btn_drag"
+                android:textOff="拖动Off"
+                android:textOn="拖动On"
+                ></ToggleButton>
+        <Button
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:id="@+id/btn_next"
+                android:background="@drawable/btn_web_forward_a"
+                ></Button>
+        <ToggleButton
+                android:id="@+id/tbtn_toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textOn="工具条显示"
+                android:textOff="工具条隐藏"
+                android:checked="true"
+                ></ToggleButton>
+    </LinearLayout>
 </RelativeLayout>
 

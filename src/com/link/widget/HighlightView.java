@@ -75,7 +75,7 @@ public class HighlightView {
         Path path = new Path();
         if (!hasFocus()) {
             mOutlinePaint.setStyle(Paint.Style.FILL);
-            mOutlinePaint.setColor(0xFFFF0000);
+            mOutlinePaint.setColor(0xFF000000);
             canvas.drawRect(mDrawRect, mOutlinePaint);
         } else {
             mOutlinePaint.setStyle(Paint.Style.STROKE);
@@ -388,7 +388,9 @@ public class HighlightView {
         mInitialAspectRatio = mCropRect.width() / mCropRect.height();
         mDrawRect = computeLayout();
 
+
         mFocusPaint.setARGB(125, 50, 50, 50);
+//        mFocusPaint.setAlpha(0);
         mNoFocusPaint.setARGB(125, 50, 50, 50);
         mOutlinePaint.setStrokeWidth(3F);
 //        mOutlinePaint.setStyle(Paint.Style.STROKE);

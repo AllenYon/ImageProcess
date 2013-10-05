@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ActionMode;
+import android.view.View;
 import net.micode.fileexplorer.FileCategoryActivity;
 import net.micode.fileexplorer.FileViewActivity;
 import net.micode.fileexplorer.Util;
@@ -43,6 +44,13 @@ public class SettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
+        findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //ToDo
+                finish();
+            }
+        });
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(DEFAULT_OFFSCREEN_PAGES);
 

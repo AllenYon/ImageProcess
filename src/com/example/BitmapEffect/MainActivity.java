@@ -1,7 +1,9 @@
 package com.example.BitmapEffect;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.*;
@@ -11,10 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import com.arcsoft.sample.widgets.EditTextScaleRotateView;
 import com.link.widget.CameraPreview;
@@ -32,18 +31,29 @@ import java.io.IOException;
 
 public class MainActivity extends Activity implements View.OnClickListener, ColorPickerDialog.OnPaintChangedListener {
     PhotoViewAttacher mAttacher;
-    Button mBtnPick,
+    //Left
+    Button mBtnHome,
             mBtnPaint,
             mBtnRotate,
             mBtnErase,
-            mBtnTakePhoto,
             mBtnHighlight,
             mBtnConver,
             mBtnAnnotion,
-            mBtnCompare;
-    //            mBtnPip;
+            mBtnCompare,
+            mBtnFileExplore,
+            mBtnSave,
+            mBtnSwitch,
+            mBtnRecord, //录像
+            mBtnTakePhoto; //连拍
 
-    Button mBtnSave;
+    //Right
+
+
+    //Bottom bar
+    Button mBtnPre, mBtnNext, mBtnZoomin, mBtnZoomout;
+    ToggleButton mTbDrag;
+
+
     ToggleButton mTbPip;
     ToggleButton mTbToolbar;
 
@@ -51,7 +61,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
 
 
     private Uri mTakePhotoUri;
-    private String mSelectedImgFilePath;
+    private Uri mSelectedImgUri;
 
     ImageView mImgMain;
     RelativeLayout mLayoutEffectContain;
@@ -61,12 +71,16 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
     MyView mDrawView;
     EditTextScaleRotateView mAnnotionView;
     CropImageView mHighlightView;
+    CropImageView mConverView;
 
     CameraPreview mCameraPreview;
     Camera mCamera;
 
+    int mCurrentDrawID;
+
 
     ScrollableBottomBar mLeftScrollableLayout, mRightScrollableLayout;
+    ViewGroup mLayoutBottomBar;
 
 
     //擦写模式选择
@@ -74,16 +88,21 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
 
 
     public enum DrawState {
-        None, Highlight, Conver, Annotion, Draw, Erase, Pip
+        None, Highlight, Conver, PreAnnotion, Annotion, Draw, Erase, Pip
+    }
+
+    public enum Type {
+        Temp, RealTime, Normal
     }
 
     private DrawState mCurrentDrawState;
+    private Type mType;
 
 
-    static public void show(Context ctx) {
+    static public void show(Context ctx, Type type) {
         Intent intent = new Intent(ctx, MainActivity.class);
+        intent.putExtra("type", type);
         ctx.startActivity(intent);
-
     }
 
 
@@ -92,47 +111,67 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        mType = (Type) getIntent().getSerializableExtra("type");
+
+
         mLayoutEffectContain = (RelativeLayout) findViewById(R.id.layout_effect_contain);
         mLayoutBaseContain = (RelativeLayout) findViewById(R.id.layout_base_contain);
+        mLayoutBottomBar = (ViewGroup) findViewById(R.id.layout_bottom_bar);
 
         mImgMain = (ImageView) findViewById(R.id.img_main);
-//        mView = (MyView) findViewById(R.id.view_draw);
-//        mAnnotionView = (EditTextScaleRotateView) findViewById(R.id.view_annotion);
-//        mHighlightView = (CropImageView) findViewById(R.id.view_highlight);
-
-
-        mBtnPick = (Button) findViewById(R.id.btn_pick);
         mBtnPaint = (Button) findViewById(R.id.btn_paint);
         mBtnErase = (Button) findViewById(R.id.btn_erase);
         mBtnRotate = (Button) findViewById(R.id.btn_rotate);
-        mBtnTakePhoto = (Button) findViewById(R.id.btn_take_photo);
         mBtnHighlight = (Button) findViewById(R.id.btn_highlight);
         mBtnConver = (Button) findViewById(R.id.btn_conver);
         mBtnAnnotion = (Button) findViewById(R.id.btn_annotation);
         mBtnCompare = (Button) findViewById(R.id.btn_compare);
-//        mBtnPip = (Button) findViewById(R.id.btn_pip);
         mTbPip = (ToggleButton) findViewById(R.id.btn_pip);
         mTbToolbar = (ToggleButton) findViewById(R.id.tbtn_toolbar);
 
+
         mBtnSave = (Button) findViewById(R.id.btn_save);
+
+        //连拍
+        mBtnTakePhoto = (Button) findViewById(R.id.btn_takephoto);
+        mBtnRecord = (Button) findViewById(R.id.btn_record);
+
+        //文件浏览
+        mBtnFileExplore = (Button) findViewById(R.id.btn_file_expolore);
+        mBtnFileExplore.setOnClickListener(this);
+
+        //Bottom Bar
+        mBtnPre = (Button) findViewById(R.id.btn_pre);
+        mBtnNext = (Button) findViewById(R.id.btn_next);
+        mBtnZoomin = (Button) findViewById(R.id.btn_zoomin_bottom);
+        mBtnZoomout = (Button) findViewById(R.id.btn_zoomout_bottom);
+
 
         mLeftScrollableLayout = (ScrollableBottomBar) findViewById(R.id.scrollable_left);
         mRightScrollableLayout = (ScrollableBottomBar) findViewById(R.id.scrollable_right);
         mLeftScrollableLayout.setScrollDirection(ScrollableBottomBar.Direction.Left);
         mRightScrollableLayout.setScrollDirection(ScrollableBottomBar.Direction.Right);
 
-        mBtnPick.setOnClickListener(this);
+
         mBtnPaint.setOnClickListener(this);
         mBtnRotate.setOnClickListener(this);
         mBtnErase.setOnClickListener(this);
-        mBtnTakePhoto.setOnClickListener(this);
         mBtnHighlight.setOnClickListener(this);
         mBtnConver.setOnClickListener(this);
         mBtnAnnotion.setOnClickListener(this);
         mBtnCompare.setOnClickListener(this);
-//        mBtnPip.setOnClickListener(this);
         mBtnSave.setOnClickListener(this);
+        //连拍
+        mBtnTakePhoto.setOnClickListener(this);
 
+        mBtnZoomin.setOnClickListener(this);
+        mBtnZoomout.setOnClickListener(this);
+
+        //Home
+        findViewById(R.id.btn_home).setOnClickListener(this);
+
+
+        updateType(mType);
 
         mAttacher = new PhotoViewAttacher(mImgMain);
         mAttacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -144,10 +183,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
                     // The toggle is enabled
                     mCameraPreview = (CameraPreview) mLayoutEffectContain.findViewById(R.id.camera_preview);
                     if (mCameraPreview == null) {
-                        mLayoutEffectContain.removeAllViews();
+//                        mLayoutEffectContain.removeAllViews();
                         mCameraPreview = new CameraPreview(MainActivity.this);
                         mCameraPreview.setId(R.id.camera_preview);
-                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(200, 200);
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
                         lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                         lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                         mLayoutEffectContain.addView(mCameraPreview, lp);
@@ -180,6 +220,21 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
             }
         });
 
+        //拖动
+        mTbDrag= (ToggleButton) findViewById(R.id.btn_drag);
+        mTbDrag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //ToDo
+                if (isChecked) {
+                    mLayoutEffectContain.setVisibility(View.GONE);
+                } else {
+                    mLayoutEffectContain.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
         mCurrentDrawState = DrawState.None;
     }
 
@@ -191,144 +246,207 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
     }
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mCurrentDrawState == DrawState.PreAnnotion) {
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                float x = ev.getX();
+                float y = ev.getY();
+
+                mAnnotionView = new EditTextScaleRotateView(this, (int) x, (int) y);
+                mAnnotionView.setId(R.id.view_annotion);
+                mLayoutEffectContain.addView(mAnnotionView,
+                        new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
+                mCurrentDrawState = DrawState.Annotion;
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
     public void onClick(View v) {
         //ToDo
         switch (v.getId()) {
-            case R.id.btn_pick:
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                startActivity(intent);
-//                Intent intent = new Intent(this, FileExplorerTabActivity.class);
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, 1);
+            case R.id.btn_home:
+                finish();
                 break;
             case R.id.btn_paint:
-                if (mColorPickerDialog == null) {
-                    mColorPickerDialog = new ColorPickerDialog(this, Color.BLACK);
-                }
-//                mColorPickerDialog.setOnColorChangedListener(this);
-                mColorPickerDialog.setOnPaintChangedListener(this);
-                mColorPickerDialog.setAlphaSliderVisible(true);
-//                mColorPickerDialog.setHexValueEnabled(true);
-//                if (state != null) {
-//                    mDialog.onRestoreInstanceState(state);
-//                }
-                mColorPickerDialog.show();
-
-                mDrawView = (MyView) mLayoutEffectContain.findViewById(R.id.view_draw);
-                if (mDrawView == null) {
-                    mLayoutEffectContain.removeAllViews();
-                    mDrawView = new MyView(this);
-                    mDrawView.setId(R.id.view_draw);
-                    mLayoutEffectContain.addView(mDrawView,
-                            new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                }
-                mDrawView.setMode(MyView.Mode.Draw);
-                mCurrentDrawState = DrawState.Draw;
+                checkState(mCurrentDrawState);
+                doDraw();
                 break;
             case R.id.btn_erase:
-                mDrawView = (MyView) mLayoutEffectContain.findViewById(R.id.view_draw);
-                if (mDrawView == null) {
-                    mLayoutEffectContain.removeAllViews();
-                    mDrawView = new MyView(this);
-                    mDrawView.setId(R.id.view_draw);
-                    mLayoutEffectContain.addView(mDrawView,
-                            new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                }
-
-                //擦写模式
-
-                showEraseTypeMenu(mBtnErase);
-//                mDrawView.setMode(MyView.Mode.Erase);
-                mCurrentDrawState = DrawState.Erase;
+                checkState(mCurrentDrawState);
+                doErase();
                 break;
             case R.id.btn_rotate:
+                mLayoutEffectContain.setRotation(mLayoutEffectContain.getRotation() + 90);
                 mAttacher.rotate90();
                 break;
-            case R.id.btn_take_photo:
-                takePhoto();
-                break;
             case R.id.btn_highlight:
-                mHighlightView = (CropImageView) mLayoutEffectContain.findViewById(R.id.view_highlight);
-                if (mHighlightView == null) {
-                    mLayoutEffectContain.removeAllViews();
-                    mHighlightView = new CropImageView(this);
-                    mHighlightView.setId(R.id.view_highlight);
-                    mLayoutEffectContain.addView(mHighlightView,
-                            new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                }
-
-                if (mCurrentDrawState != DrawState.Highlight) {
-                    HighlightView hv = makeHighligth();
-                    mHighlightView.mHighlightViews.clear(); // Thong added for rotate
-                    mHighlightView.add(hv);
-                }
-
-                mCurrentDrawState = DrawState.Highlight;
+                doHighlight();
                 break;
             case R.id.btn_annotation:
-                mAnnotionView = (EditTextScaleRotateView) findViewById(R.id.view_annotion);
-                if (mAnnotionView == null) {
-                    mLayoutEffectContain.removeAllViews();
-                    mAnnotionView = new EditTextScaleRotateView(this);
-                    mAnnotionView.setId(R.id.view_annotion);
-                    mLayoutEffectContain.addView(mAnnotionView,
-                            new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                }
-
-                if (mCurrentDrawState != DrawState.Annotion) {
-                    mAnnotionView.setBackgroundColor(Color.BLACK);
-                }
-
-                mCurrentDrawState = DrawState.Annotion;
-
+                checkState(mCurrentDrawState);
+                doAnnotation();
                 break;
             case R.id.btn_conver:
-
-                mHighlightView = (CropImageView) mLayoutEffectContain.findViewById(R.id.view_highlight);
-                if (mHighlightView == null) {
-                    mLayoutEffectContain.removeAllViews();
-                    mHighlightView = new CropImageView(this);
-                    mHighlightView.setId(R.id.view_highlight);
-                    mLayoutEffectContain.addView(mHighlightView,
-                            new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                }
-                if (mCurrentDrawState != DrawState.Conver) {
-                    HighlightView hv = makeConver();
-                    mHighlightView.mHighlightViews.clear(); // Thong added for rotate
-                    mHighlightView.add(hv);
-                }
-
-                mCurrentDrawState = DrawState.Conver;
-
+                doConver();
                 break;
             case R.id.btn_compare:
-                if (!TextUtils.isEmpty(mSelectedImgFilePath)) {
-                    CompareActivity.show(this, mSelectedImgFilePath);
+                if (mSelectedImgUri == null) {
+                    Toast.makeText(this, "选择一张图片后,才能使用对比功能", Toast.LENGTH_LONG).show();
+                } else {
+                    CompareActivity.show(this, mSelectedImgUri);
                 }
-
                 break;
             case R.id.btn_save:
-                mLayoutBaseContain.setDrawingCacheEnabled(true);
-                mLayoutBaseContain.buildDrawingCache();
-                Bitmap bitmap = mLayoutBaseContain.getDrawingCache();
+                doSave();
+                break;
 
-                int d = bitmap.getHeight();
-
-                File saveFile = new File(Environment.getExternalStorageDirectory(), System.currentTimeMillis() + ".png");
-                try {
-                    FileOutputStream fos = new FileOutputStream(saveFile);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                    fos.flush();
-                    fos.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            case R.id.btn_takephoto:
+                //连拍
+                takePhoto();
+                break;
+            case R.id.btn_file_expolore:
+                doPick();
+                break;
+            case R.id.btn_zoomout_bottom:
+                mAttacher.zoomTo(0.5f, mImgMain.getWidth() / 2, mImgMain.getHeight() / 2);
+                break;
+            case R.id.btn_zoomin_bottom:
+                mAttacher.zoomTo(1.5f, mImgMain.getWidth() / 2, mImgMain.getHeight() / 2);
                 break;
         }
+    }
+
+    private void checkState(DrawState curretnState) {
+        if (curretnState == DrawState.Conver) {
+            mLayoutEffectContain.removeView(mConverView);
+            mConverView = null;
+        }
+    }
+
+    private void doSave() {
+        mLayoutBaseContain.setDrawingCacheEnabled(true);
+        mLayoutBaseContain.buildDrawingCache();
+        final Bitmap bitmap = mLayoutBaseContain.getDrawingCache();
+        final File saveFile = new File(Utils.getDir(), System.currentTimeMillis() + ".png");
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        AlertDialog dialog = b.setTitle("保存图片")
+                .setMessage("图片将保存到\n" + saveFile.getAbsolutePath())
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //ToDo
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //ToDo
+                        try {
+                            Utils.saveBitmap(bitmap, saveFile);
+                            Toast.makeText(MainActivity.this, "保存成功", Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, "操作异常", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }).create();
+        b.show();
+    }
+
+    private void doConver() {
+        mConverView = (CropImageView) mLayoutEffectContain.findViewWithTag("conver");
+        if (mConverView == null) {
+            mConverView = new CropImageView(this);
+            mConverView.setTag("conver");
+            mLayoutEffectContain.addView(mConverView, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        if (mCurrentDrawState != DrawState.Conver) {
+            HighlightView hv = makeConver();
+            mConverView.mHighlightViews.clear(); // Thong added for rotate
+            mConverView.add(hv);
+        }
+        mCurrentDrawState = DrawState.Conver;
+    }
+
+    private void doHighlight() {
+        mHighlightView = (CropImageView) mLayoutEffectContain.findViewById(R.id.view_highlight);
+        if (mHighlightView == null) {
+            mHighlightView = new CropImageView(this);
+            mHighlightView.setId(R.id.view_highlight);
+            mLayoutEffectContain.addView(mHighlightView, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+
+        if (mCurrentDrawState != DrawState.Highlight) {
+            HighlightView hv = makeHighligth();
+            mHighlightView.mHighlightViews.clear(); // Thong added for rotate
+            mHighlightView.add(hv);
+        }
+        mCurrentDrawState = DrawState.Highlight;
+    }
+
+    private void doAnnotation() {
+        mCurrentDrawState = DrawState.PreAnnotion;
+
+//        mAnnotionView = new EditTextScaleRotateView(this);
+//        mAnnotionView.setId(R.id.view_annotion);
+//        mLayoutEffectContain.addView(mAnnotionView,
+//                new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                        ViewGroup.LayoutParams.MATCH_PARENT));
+//        mCurrentDrawState = DrawState.Annotion;
+    }
+
+    private void doErase() {
+//        mDrawView = (MyView) mLayoutEffectContain.findViewById(R.id.view_draw);
+        mDrawView = (MyView) mLayoutEffectContain.findViewWithTag(mCurrentDrawID);
+        if (mDrawView != null) {
+            //擦写模式
+            mDrawView.bringToFront();
+            showEraseTypeMenu(mBtnErase);
+            mCurrentDrawState = DrawState.Erase;
+        }
+    }
+
+    private void doDraw() {
+        if (mColorPickerDialog == null) {
+            mColorPickerDialog = new ColorPickerDialog(this, Color.BLACK);
+        }
+        mColorPickerDialog.setOnPaintChangedListener(this);
+        mColorPickerDialog.setAlphaSliderVisible(true);
+        mColorPickerDialog.show();
+
+//        mDrawView = (MyView) mLayoutEffectContain.findViewById(R.id.view_draw);
+//        if (mDrawView == null) {
+//            mLayoutEffectContain.removeAllViews();
+//            mDrawView = new MyView(this);
+//            mDrawView.setId(R.id.view_draw);
+//            mLayoutEffectContain.addView(mDrawView,
+//                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        }
+
+        mDrawView = new MyView(this);
+        mCurrentDrawID++;
+//        mDrawView.setId(R.id.view_draw);
+        mDrawView.setTag(mCurrentDrawID);
+        mLayoutEffectContain.addView(mDrawView, new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        mDrawView.setMode(MyView.Mode.Draw);
+        mCurrentDrawState = DrawState.Draw;
+    }
+
+    private void doPick() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, 1);
     }
 
 
@@ -371,7 +489,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
     }
 
     private HighlightView makeConver() {
-        HighlightView hv = new HighlightView(mHighlightView);
+        HighlightView hv = new HighlightView(mConverView);
         Rect imageRect = new Rect(0, 0, mLayoutEffectContain.getWidth(), mLayoutEffectContain.getHeight());
         // make the default size about 4/5 of the width or height
 //            int cropWidth = Math.min(width, height) * 4 / 5;
@@ -406,20 +524,54 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
         startActivityForResult(intent, 102);
     }
 
+    private void updateType(Type type) {
+        this.mType = type;
+        switch (mType) {
+            case Normal:
+                mRightScrollableLayout.setVisibility(View.GONE);
+                mLayoutBottomBar.setVisibility(View.VISIBLE);
+                mBtnPre.setVisibility(View.VISIBLE);
+                mBtnNext.setVisibility(View.VISIBLE);
+                mBtnRecord.setClickable(false);
+                mBtnTakePhoto.setClickable(false);
+                break;
+            case Temp:
+                mRightScrollableLayout.setVisibility(View.GONE);
+                mLayoutBottomBar.setVisibility(View.VISIBLE);
+                mBtnPre.setVisibility(View.GONE);
+                mBtnNext.setVisibility(View.GONE);
+                mBtnRecord.setClickable(false);
+                mBtnTakePhoto.setClickable(false);
+                break;
+
+            case RealTime:
+            default:
+                mRightScrollableLayout.setVisibility(View.VISIBLE);
+                mLayoutBottomBar.setVisibility(View.GONE);
+                mBtnPre.setVisibility(View.VISIBLE);
+                mBtnNext.setVisibility(View.VISIBLE);
+
+                mBtnRecord.setClickable(true);
+                mBtnTakePhoto.setClickable(true);
+
+                break;
+        }
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
-                Uri selectedImageUri = data.getData();
-//                mSelectedImgFilePath = selectedImageUri.getPath();
-//                Bitmap bitmap = BitmapFactory.decodeFile(mSelectedImgFilePath);
-
+                mSelectedImgUri = data.getData();
                 try {
-                    Bitmap bb = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                    Bitmap bb = MediaStore.Images.Media.getBitmap(getContentResolver(), mSelectedImgUri);
                     mImgMain.setImageBitmap(bb);
                     mAttacher.update();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                updateType(Type.Normal);
+
             } else if (requestCode == 101) {
                 try {
                     Toast.makeText(this, "uri " + mTakePhotoUri.toString(), Toast.LENGTH_LONG).show();
@@ -431,10 +583,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Colo
                 }
 
             } else if (requestCode == 102) {
-                String saveFile = data.getStringExtra("savefile");
-                Bitmap bitmap = BitmapFactory.decodeFile(saveFile);
-                mImgMain.setImageBitmap(bitmap);
-                mAttacher.update();
+//                String saveFile = data.getStringExtra("savefile");
+//                Bitmap bitmap = BitmapFactory.decodeFile(saveFile);
+//                mImgMain.setImageBitmap(bitmap);
+//                mAttacher.update();
+
             }
 
         }

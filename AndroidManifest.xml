@@ -35,6 +35,7 @@
                   android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
         <activity android:name=".CompareActivity"
+                  android:screenOrientation="landscape"
                   android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
         <activity android:name=".TakePhotoActivity"
